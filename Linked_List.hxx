@@ -31,6 +31,7 @@ class Linked_List {
 
     // Remove methods
     void Remove(T Item);
+    void Remove(Node<T>* CurrentNode);
 
     // Getter methods
     unsigned GetLength() const { return (*this).Length; }
@@ -194,5 +195,34 @@ void Linked_List<T>::Remove(T Item) {
     else { CurrentNode = CurrentNode->GetNext(); }
   } // while(CurrentNode != nullptr) {
 } // void Linked_List<T>::Remove(T Item) {
+
+
+template <typename T>
+void Linked_List<T>::Remove(Node<T>* CurrentNode) {
+  /* This method removes the specified node from the list. */
+  Node<T>* NextNode = CurrentNode->Next;
+  Node<T>* PrevNode = CurrentNode->Prev;
+
+  /* First, if the to-be-removed node has a next node then have it point to the
+  previous node (rather than the current node). Likewise, if to-be-removed node
+  has a previous node then make it point to the Next node (rather than the
+  current node) */
+  if(NextNode != nullptr) { NextNode->Prev = PrevNode; }
+  if(PrevNode != nullptr) { PrevNode->Next = NextNode; }
+
+  /* Now, check if the current node is the Head or Tail. If it's the head then
+  make the head point to the next node. If it's the tail then make the tail
+  point to the previous node.
+
+  Note: If it exists, the next node's prev pointer has already been set to null
+  Likewise, if it exists, the previous node's next point has already been set to
+  null. Thus, the next (prev) pointer is ready to be the new head (tail) */
+  if((*this).Head == CurrentNode) { (*this).Head = NextNode; }
+  if((*this).Tail == CurrentNode) { (*this).Tail = PrevNode; }
+
+  /* Now, delete the current node */
+  delete CurrentNode;
+  (*this).Length--;
+} // void Linked_List<T>::Remove(Node<T>* CurrentNode) {
 
 #endif

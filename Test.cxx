@@ -56,8 +56,7 @@ TEST_CASE("List tests","[List][Insertion]") {
   REQUIRE( L2[0]->GetItem() == value1 );
   REQUIRE( L2[1]->GetItem() == value2 );
 
-  /* Now, let's try removing the items and testing that the list updates the
-  way that it should. */
+  /* Now, let's try the item based remove method. */
   L1.Append(value1);    /* List should now be value2 <-> value1 <-> value1 */
   REQUIRE( L1.GetLength() == 3 );
   REQUIRE( L1[2]->GetItem() == value1 );
@@ -69,4 +68,20 @@ TEST_CASE("List tests","[List][Insertion]") {
   L1.Remove(value2);    /* List should now be empty */
   REQUIRE( L1.GetLength() == 0 );
   REQUIRE( L1.Search(value2) == nullptr );
+
+  /* Now, test that the node based remove method works */
+  double value3 = 1293.12942;
+  L2.Append(value3);    /* List should now be value1 <-> value2 <-> value3 */
+  L2.Remove(L2[1]);     /* List should now be value1 <-> value3 */
+  REQUIRE( L2.GetLength() == 2 );
+  REQUIRE( L2.Search(value1) != nullptr );
+  REQUIRE( L2.Search(value2) == nullptr );
+  REQUIRE( L2.Search(value3) != nullptr );
+  REQUIRE( L2[0]->GetItem() == value1 );
+  REQUIRE( L2[1]->GetItem() == value3 );
+  L2.Remove(L2[0]);          /* List should now be be value3 */
+  REQUIRE( L2.GetLength() == 1 );
+  REQUIRE( L2.Search(value1) == nullptr );
+  REQUIRE( L2.Search(value3) != nullptr );
+  REQUIRE( L2[0]->GetItem() == value3 );
 } // TEST_CASE("List insertion tests","[List][Insertion]") {
