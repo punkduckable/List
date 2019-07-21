@@ -41,11 +41,16 @@ TEST_CASE("List tests","[List][Insertion]") {
         L1: value2 -> value1
   and L2 should look like
         L2: value1 -> value2
-  Let's check that the two values are in the correct positions. */
-  REQUIRE( L1.Search(value1) == 1 );
-  REQUIRE( L1.Search(value2) == 0 );
-  REQUIRE( L2.Search(value1) == 0 );
-  REQUIRE( L2.Search(value2) == 1 );
+  Let's check that both values can be found in the list and that searching for
+  an item that isn't in the list returns nullptr */
+  REQUIRE( L1.Search(value1) != nullptr );
+  REQUIRE( L1.Search(value2) != nullptr );
+  REQUIRE( L1.Search(value1 + 1) == nullptr );
+
+  /* Now, let's check that the ordering of the nodes is correct */
+  REQUIRE( L1.Search(value2)->GetNext() == L1.Search(value1) );
+  REQUIRE( L2.Search(value1)->GetNext() == L2.Search(value2) );
+
 
   /* Now, check that the [] operators work for accessing values. */
   REQUIRE( L2[0] == value1 );
@@ -58,10 +63,10 @@ TEST_CASE("List tests","[List][Insertion]") {
   REQUIRE( L1[2] == value1 );
   L1.Remove(value1);    /* List should now be value2 */
   REQUIRE( L1.GetLength() == 1 );
-  REQUIRE( L1.Search(value1) == -1 );
-  REQUIRE( L1.Search(value2) == 0 );
+  REQUIRE( L1.Search(value1) == nullptr );
+  REQUIRE( L1.Search(value2) != nullptr );
   REQUIRE( L1[0] == value2 );
   L1.Remove(value2);    /* List should now be empty */
   REQUIRE( L1.GetLength() == 0 );
-  REQUIRE( L1.Search(value2) == -1 );
+  REQUIRE( L1.Search(value2) == nullptr );
 } // TEST_CASE("List insertion tests","[List][Insertion]") {

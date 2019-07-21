@@ -25,7 +25,7 @@ class Linked_List {
     void Prepend(T Item);
 
     // Searching/Access methods
-    int Search(T Item) const;
+    Node<T> const * Search(T Item) const;
     T operator[](unsigned index) const;
 
     // Remove methods
@@ -105,11 +105,10 @@ void Linked_List<T>::Prepend(T Item) {
 // Searching/Access methods
 
 template <typename T>
-int Linked_List<T>::Search(T Item) const {
-  /* This method is used to find the index of a particular item in a list. If
-  the item is in the list then this returns the index of that item.
-
-  If the item is not in the list then -1 is returned.
+Node<T> const * Linked_List<T>::Search(T Item) const {
+  /* This method is used to find an item in the list. If there is a node in
+  the list with the specified Item then we return the address of that node.
+  If no such node can be found, nullptr is returned.
 
   The searching process works using a linear searching algorithm. This is the
   only option since we're using a linked list. Even if the data was sorted,
@@ -119,7 +118,7 @@ int Linked_List<T>::Search(T Item) const {
   while(Entry != nullptr) {
     /* Check if Entry's item matches the requested item. If so, return index.
     Otherwise, move onto the next item. */
-    if(Entry->GetItem() == Item ) { return index; }
+    if(Entry->GetItem() == Item ) { return Entry; }
     else {
       index++;
       Entry = Entry->GetNext();
@@ -127,8 +126,8 @@ int Linked_List<T>::Search(T Item) const {
   } // while(Entry != nullptr){
 
   // If we got here then that means the item is not in the list. Return -1
-  return -1;
-} // int Linked_List<T>::Search(T Item) const {
+  return nullptr;
+} // Node<T> const * Linked_List<T>::Search(T Item) {
 
 
 template <typename T>
