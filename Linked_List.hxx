@@ -114,15 +114,11 @@ Node<T> const * Linked_List<T>::Search(T Item) const {
   only option since we're using a linked list. Even if the data was sorted,
   there would be no way to implement a binary searching algorithm. */
   Node<T> const * Entry = (*this).Head;
-  unsigned index = 0;
   while(Entry != nullptr) {
-    /* Check if Entry's item matches the requested item. If so, return index.
-    Otherwise, move onto the next item. */
+    /* Check if Entry's item matches the requested item. If so, return entry's
+    address. */
     if(Entry->GetItem() == Item ) { return Entry; }
-    else {
-      index++;
-      Entry = Entry->GetNext();
-    } // else {
+    else { Entry = Entry->GetNext(); }
   } // while(Entry != nullptr){
 
   // If we got here then that means the item is not in the list. Return -1
