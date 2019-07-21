@@ -53,19 +53,19 @@ TEST_CASE("List tests","[List][Insertion]") {
 
 
   /* Now, check that the [] operators work for accessing values. */
-  REQUIRE( L2[0] == value1 );
-  REQUIRE( L2[1] == value2 );
+  REQUIRE( L2[0]->GetItem() == value1 );
+  REQUIRE( L2[1]->GetItem() == value2 );
 
   /* Now, let's try removing the items and testing that the list updates the
   way that it should. */
   L1.Append(value1);    /* List should now be value2 -> value1 -> value1 */
   REQUIRE( L1.GetLength() == 3 );
-  REQUIRE( L1[2] == value1 );
+  REQUIRE( L1[2]->GetItem() == value1 );
   L1.Remove(value1);    /* List should now be value2 */
   REQUIRE( L1.GetLength() == 1 );
   REQUIRE( L1.Search(value1) == nullptr );
   REQUIRE( L1.Search(value2) != nullptr );
-  REQUIRE( L1[0] == value2 );
+  REQUIRE( L1[0]->GetItem() == value2 );
   L1.Remove(value2);    /* List should now be empty */
   REQUIRE( L1.GetLength() == 0 );
   REQUIRE( L1.Search(value2) == nullptr );

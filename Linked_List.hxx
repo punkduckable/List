@@ -26,7 +26,7 @@ class Linked_List {
 
     // Searching/Access methods
     Node<T> const * Search(T Item) const;
-    T operator[](unsigned index) const;
+    Node<T> const * operator[](unsigned index) const;
 
     // Remove methods
     void Remove(T Item);
@@ -127,7 +127,7 @@ Node<T> const * Linked_List<T>::Search(T Item) const {
 
 
 template <typename T>
-T Linked_List<T>::operator[](unsigned requested_index ) const {
+Node<T> const * Linked_List<T>::operator[](unsigned requested_index ) const {
   // the requested index must be less than the length of the list
   assert(requested_index < (*this).Length );
 
@@ -135,8 +135,8 @@ T Linked_List<T>::operator[](unsigned requested_index ) const {
   Return its value */
   Node<T> const * Entry = (*this).Head;
   for(unsigned index = 0; index < requested_index; index++) { Entry = Entry->GetNext(); }
-  return Entry->GetItem();
-} // T& Linked_List<T>::operator[](unsigned requested_index ) {
+  return Entry;
+} // Node<T> const * Linked_List<T>::operator[](unsigned requested_index ) const {
 
 
 
