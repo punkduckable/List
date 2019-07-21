@@ -1,8 +1,12 @@
 #if !defined(NODE_HEADER)
 #define NODE_HEADER
 
+#include "Forward_Declarations.hxx"
+
 template <typename T>
 class Node {
+  friend class Linked_List<T>;
+  
   private:
     T Item;
     Node<T>* Next;
@@ -12,9 +16,7 @@ class Node {
     ~Node() {}
 
     // Getter and setter methods
-    void SetItem(T New_Item) { Item = New_Item; };
     T GetItem() const { return Item; }
-    void SetNext(Node<T>* Next) { (*this).Next = Next; }
     Node<T>* GetNext() const { return Next; }
 }; // class Node {
 
