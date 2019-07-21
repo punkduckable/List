@@ -2,6 +2,7 @@
 #define LIST_HEADER
 
 #include "Node.hxx"
+#include "Forward_Declarations.hxx"
 #include <assert.h>
 #include <stdio.h>
 
@@ -25,8 +26,8 @@ class Linked_List {
     void Prepend(T Item);
 
     // Searching/Access methods
-    Node<T> const * Search(T Item) const;
-    T operator[](unsigned index) const;
+    Node<T>* Search(T Item) const;
+    Node<T>* operator[](unsigned requested_index ) const;
 
     // Remove methods
     void Remove(T Item);
@@ -41,12 +42,12 @@ template <typename T>
 Linked_List<T>::~Linked_List() {
   /* Before we can let the list go, we need to free each item in the list.
   We do this by starting at the head and work our way back. */
-  Node<T>* Entry = Head;
-  while(Entry != nullptr) {
-    Node<T>* Next = Entry->GetNext();
-    delete Entry;
-    Entry = Next;
-  } // while(Entry != nullptr) {
+  Node<T>* CurrentNode = Head;
+  while(CurrentNode != nullptr) {
+    Node<T>* Next = CurrentNode->GetNext();
+    delete CurrentNode;
+    CurrentNode = Next;
+  } // while(CurrentNode != nullptr) {
 } // Linked_List<T>::~Linked_List() {
 
 
@@ -57,18 +58,19 @@ Linked_List<T>::~Linked_List() {
 template <typename T>
 void Linked_List<T>::Append(T Item) {
   /* To append the item onto the list, we first create a new node to hold the
-  new item and then make that node the new tail of the list.
+  new item and then make that node the new tail of the list. */
 
-  If the list is currently empty (Length == 0) then the new node is both the
-  head and tail. */
   Node<T>* New_Tail = new Node<T>{Item};
 
+  /* If the list is currently empty (Length == 0) then the new node is both the
+  head and tail. Otherwise, it is just the new head */
   if((*this).Length == 0) {
     (*this).Tail = New_Tail;
     (*this).Head = New_Tail;
   } // if((*this).Length == 0) {
   else {
-    (*this).Tail->SetNext(New_Tail);
+    New_Tail->Prev = (*this).Tail;
+    (*this).Tail->Next = New_Tail;
     (*this).Tail = New_Tail;
   } // else {
 
@@ -91,7 +93,8 @@ void Linked_List<T>::Prepend(T Item) {
     (*this).Head = New_Head;
   } // if((*this).Length == 0) {
   else {
-    New_Head->SetNext((*this).Head);
+    New_Head->Next = (*this).Head;
+    (*this).Head->Prev = New_Head;
     (*this).Head = New_Head;
   } // else {
 
@@ -105,7 +108,7 @@ void Linked_List<T>::Prepend(T Item) {
 // Searching/Access methods
 
 template <typename T>
-Node<T> const * Linked_List<T>::Search(T Item) const {
+Node<T>* Linked_List<T>::Search(T Item) const {
   /* This method is used to find an item in the list. If there is a node in
   the list with the specified Item then we return the address of that node.
   If no such node can be found, nullptr is returned.
@@ -113,29 +116,29 @@ Node<T> const * Linked_List<T>::Search(T Item) const {
   The searching process works using a linear searching algorithm. This is the
   only option since we're using a linked list. Even if the data was sorted,
   there would be no way to implement a binary searching algorithm. */
-  Node<T> const * Entry = (*this).Head;
-  while(Entry != nullptr) {
-    /* Check if Entry's item matches the requested item. If so, return entry's
-    address. */
-    if(Entry->GetItem() == Item ) { return Entry; }
-    else { Entry = Entry->GetNext(); }
-  } // while(Entry != nullptr){
+  Node<T>* CurrentNode = (*this).Head;
+  while(CurrentNode != nullptr) {
+    /* Check if the current nodes's item matches the requested item. If so,
+    return the current nodes's address. */
+    if(CurrentNode->GetItem() == Item ) { return CurrentNode; }
+    else { CurrentNode = CurrentNode->GetNext(); }
+  } // while(CurrentNode != nullptr){
 
   // If we got here then that means the item is not in the list. Return -1
   return nullptr;
-} // Node<T> const * Linked_List<T>::Search(T Item) {
+} // Node<T>* Linked_List<T>::Search(T Item) {
 
 
 template <typename T>
-T Linked_List<T>::operator[](unsigned requested_index ) const {
+Node<T>* Linked_List<T>::operator[](unsigned requested_index ) const {
   // the requested index must be less than the length of the list
   assert(requested_index < (*this).Length );
 
   /* Cycle through the list until we get to the node with the requested index.
   Return its value */
-  Node<T> const * Entry = (*this).Head;
-  for(unsigned index = 0; index < requested_index; index++) { Entry = Entry->GetNext(); }
-  return Entry->GetItem();
+  Node<T>* CurrentNode = (*this).Head;
+  for(unsigned index = 0; index < requested_index; index++) { CurrentNode = CurrentNode->GetNext(); }
+  return CurrentNode;
 } // T& Linked_List<T>::operator[](unsigned requested_index ) {
 
 
@@ -149,42 +152,47 @@ void Linked_List<T>::Remove(T Item) {
   if no such items exist, then there are no changes. If one or more items match
   the specified item then all are removed. */
 
-  Node<T>* Entry = (*this).Head;
-  Node<T>* Prev = nullptr;
-  while(Entry != nullptr) {
-    // Check if the current entry's item matches the specified item.
-    if(Entry->GetItem() == Item) {
-      /* If so then we need to remove this node. If this node happens to be
-      the head then we need to update the Head. Otherwise, bypass Entry.*/
-      if(Entry == (*this).Head) {
+  Node<T>* CurrentNode = (*this).Head;
+  while(CurrentNode != nullptr) {
+    // Check if the current node's item matches the specified item.
+    if(CurrentNode->GetItem() == Item) {
+      /* If so then we need to remove this node. If this node happens to be the
+      head then we need to update the Head. Otherwise, bypass the current node. */
+      if(CurrentNode == (*this).Head) {
         /* If this node also happens to be the tail, then both the head and the
         tail need to be set to nullptr. Otherwise, we just need to update Head */
-        if(Entry == (*this).Tail) { (*this).Head = (*this).Tail = nullptr; }
-        else { (*this).Head = (*this).Head->GetNext(); }
-      } // if(Entry == (*this).Head) {
+        if(CurrentNode == (*this).Tail) { (*this).Head = (*this).Tail = nullptr; }
+        else {
+          Node<T>* NextNode = (*this).Head->GetNext();
+          (*this).Head = NextNode;
+          NextNode->Prev = nullptr;
+        } // else {
+      } // if(CurrentNode == (*this).Head) {
       else {
-        /* If entry is also the tail (but not the head), then we need to update
-        the tail. Otherise, bypass Entry. */
-        if(Entry == (*this).Tail) {
-          Prev->SetNext(nullptr);
-          (*this).Tail = Prev;
-        } // if(Entry == (*this).Tail) {
-        else { Prev->SetNext(Entry->GetNext()); }
+        Node<T>* PrevNode = CurrentNode->GetPrev();
+
+        /* If the current node is also the tail (but not the head), then we need
+        to update the tail. Otherise, bypass the current node. */
+        if(CurrentNode == (*this).Tail) {
+          PrevNode->Next = nullptr;
+          (*this).Tail = PrevNode;
+        } // if(CurrentNode == (*this).Tail) {
+        else {
+          Node<T>* NextNode = CurrentNode->GetNext();
+          PrevNode->Next = NextNode;
+          NextNode->Prev = PrevNode;
+        } // else {
       } // else {
 
-      /* In either case, delete Entry and update the List's length. Prev remains
-      unchanged while Entry gets updated to the next item in the list.  */
-      Node<T>* Next = Entry->GetNext();
-      delete Entry;
+      /* In either case, delete current node and update the List's length.
+      Then, updated current node to the next node in the list. */
+      Node<T>* NextNode = CurrentNode->GetNext();
+      delete CurrentNode;
       (*this).Length--;
-      Entry = Next;
-    } // if(Entry->GetItem() == Item) {
-    else {
-      /* If not, update Entry and Prev */
-      Prev = Entry;
-      Entry = Entry->GetNext();
-    } // else {
-  } // while(Entry != nullptr) {
+      CurrentNode = NextNode;
+    } // if(CurrentNode->GetItem() == Item) {
+    else { CurrentNode = CurrentNode->GetNext(); }
+  } // while(CurrentNode != nullptr) {
 } // void Linked_List<T>::Remove(T Item) {
 
 #endif

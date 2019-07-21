@@ -1,21 +1,25 @@
 #if !defined(NODE_HEADER)
 #define NODE_HEADER
 
+#include "Forward_Declarations.hxx"
+
 template <typename T>
 class Node {
+  friend class Linked_List<T>;
+
   private:
     T Item;
     Node<T>* Next;
+    Node<T>* Prev;
   public:
     // Constructor, destricutor
-    Node(T Item): Item(Item), Next(nullptr) {}
+    Node(T Item): Item(Item), Next(nullptr), Prev(nullptr) {}
     ~Node() {}
 
-    // Getter and setter methods
-    void SetItem(T New_Item) { Item = New_Item; };
+    // Getter methods
     T GetItem() const { return Item; }
-    void SetNext(Node<T>* Next) { (*this).Next = Next; }
     Node<T>* GetNext() const { return Next; }
+    Node<T>* GetPrev() const { return Prev; }
 }; // class Node {
 
 #endif
